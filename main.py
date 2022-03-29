@@ -67,7 +67,7 @@ def get_cell_image(cell: tuple) -> pygame.surface:
     return None
 
 
-def wins(cell: tuple) -> bool:
+def win(cell: tuple) -> bool:
     x = cell[0]
     y = cell[1]
 
@@ -84,6 +84,10 @@ def wins(cell: tuple) -> bool:
     #         1 == cells[(2, 0)] == cells[(1, 1)] == cells[(0, 2)] or \
     #         1 == cells[(1, 0)] == cells[(1, 1)] == cells[(1, 2)] or \
     #         1 == cells[(0, 1)] == cells[(1, 1)] == cells[(2, 1)]
+
+
+def draw():
+    return all(map(lambda d: cells[d] != 0, cells.keys()))
 
 
 def start_game():
@@ -111,18 +115,20 @@ def start_game():
                 if cells[cell] == CellState.EMPTY:
                     cells[cell] = CellState.CIRCLE if turn else CellState.CROSS
 
-                    if wins(cell):
+                    # Win Screen
+                    # No lose screens will be in place
+                    # The game will rotate which image to place and keep track with the dictionary
+                    # On each turn it will calculate if any fields connected to the placed one form
+                    # a winning row.
+                    if win(cell):
                         winner: str = 'O' if turn else 'X'
                         win_text = font.render(winner + ' has won!', False, (255, 0, 0))
-                        pygame.display.get_surface().blit(win_text, ((width - 64) // 2, (height - 64) // 2))
-
-                    turn = not turn
-
-                # TODO: Win Screen
-                #  No lose screens will be in place
-                #  The game will rotate which image to place and keep track with the dictionary
-                #  On each turn it will calculate if any fields connected to the placed one form
-                #  a winning row.
+                        pygame.display.get_surface().blit(win_text, ((width - win_text.get_width()) // 2, (height - win_text.get_height()) // 2))
+                    elif draw():
+                        win_text = font.render('Draw!', False, (255, 0, 0))
+                        pygame.display.get_surface().blit(win_text, ((width - win_text.get_width()) // 2, (height - win_text.get_height()) // 2))
+                    else:
+                        turn = not turn
 
             # Press ESC to quit
             if event.type in (QUIT, K_q):
