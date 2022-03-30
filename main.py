@@ -73,17 +73,23 @@ def win(cell: tuple) -> bool:
 
     col_values = [cells[a] for a in list(filter(lambda b: b[0] == x, cells))]
     row_values = [cells[a] for a in list(filter(lambda b: b[1] == y, cells))]
+    row_win = row_values.count(row_values[0]) == 3
+    col_win = col_values.count(col_values[0]) == 3
+    # If row or col value is in a diagonal
+    if x % 2 == 0 or y % 2 == 0:
+        # Upper-left and down-right diagonal == values are equal to each other
+        ldg_values = [cells[a] for a in list(filter(lambda b: b[0] == b[1], cells))]
+        # Upper-right and down-left diagonal == values make a sum of 2
+        # e.g. the amount of cols/rows for a given matrix
+        # here it's 2 because we start from 0, so actually 3
+        rdg_values = [cells[a] for a in list(filter(lambda b: b[0] + b[1] == 2, cells))]
 
-    return (row_values.count(row_values[0]) == 3) or \
-           (col_values.count(col_values[0]) == 3)
+        ldg_win = ldg_values[0] != 0 and ldg_values.count(ldg_values[0]) == 3
+        rdg_win = rdg_values[0] != 0 and rdg_values.count(rdg_values[0]) == 3
 
-    # if x % 2 == y % 2 == 0:
-    #
-    # elif x == y == 1:
-    #     return 1 == cells[(0, 0)] == cells[(1, 1)] == cells[(2, 2)] or \
-    #         1 == cells[(2, 0)] == cells[(1, 1)] == cells[(0, 2)] or \
-    #         1 == cells[(1, 0)] == cells[(1, 1)] == cells[(1, 2)] or \
-    #         1 == cells[(0, 1)] == cells[(1, 1)] == cells[(2, 1)]
+        return row_win or col_win or ldg_win or rdg_win
+    else:
+        return row_win or col_win
 
 
 def draw():
@@ -123,10 +129,12 @@ def start_game():
                     if win(cell):
                         winner: str = 'O' if turn else 'X'
                         win_text = font.render(winner + ' has won!', False, (255, 0, 0))
-                        pygame.display.get_surface().blit(win_text, ((width - win_text.get_width()) // 2, (height - win_text.get_height()) // 2))
+                        pygame.display.get_surface().blit(win_text, (
+                            (width - win_text.get_width()) // 2, (height - win_text.get_height()) // 2))
                     elif draw():
                         win_text = font.render('Draw!', False, (255, 0, 0))
-                        pygame.display.get_surface().blit(win_text, ((width - win_text.get_width()) // 2, (height - win_text.get_height()) // 2))
+                        pygame.display.get_surface().blit(win_text, (
+                            (width - win_text.get_width()) // 2, (height - win_text.get_height()) // 2))
                     else:
                         turn = not turn
 
