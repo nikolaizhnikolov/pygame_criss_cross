@@ -1,5 +1,7 @@
+import sys
+
 import pygame
-# from pygame.locals import *
+from pygame.locals import *
 from Scene import Scene
 from MainMenuScene import MainMenuScene
 from ObjectManager import ObjectManager
@@ -29,3 +31,17 @@ manager.add_shared_objects(manager, {'screen': screen,
                                      'font': font})
 
 active_scene: Scene = MainMenuScene()
+
+while True:
+    events = pygame.event.get()
+
+    # Handle shared inputs across levels
+    for event in events:
+        if event.type == KEYDOWN:
+            if event.key == K_ESCAPE:
+                sys.exit()
+
+    active_scene.handle_input(events)
+    active_scene.update()
+    active_scene.render(screen)
+
